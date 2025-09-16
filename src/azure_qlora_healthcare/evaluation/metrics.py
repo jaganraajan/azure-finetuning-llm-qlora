@@ -2,6 +2,7 @@
 Evaluation metrics for healthcare QLoRA models.
 """
 
+
 import json
 import pandas as pd
 from typing import Dict, Any, List, Tuple
@@ -9,12 +10,9 @@ from pathlib import Path
 import numpy as np
 from datasets import Dataset
 
-try:
-    from rouge_score import rouge_scorer
-    from evaluate import load as load_metric
-    METRICS_AVAILABLE = True
-except ImportError:
-    METRICS_AVAILABLE = False
+# Advanced metrics (rouge-score, evaluate, bleu) are not installed
+# METRICS_AVAILABLE will always be False
+METRICS_AVAILABLE = False
 
 from ..utils.logger import get_logger
 
@@ -28,18 +26,9 @@ class HealthcareEvaluator:
         self.logger = get_logger(__name__)
         
         # Initialize metrics if available
-        if METRICS_AVAILABLE:
-            try:
-                self.rouge_scorer = rouge_scorer.RougeScorer(['rouge1', 'rouge2', 'rougeL'], use_stemmer=True)
-                self.bleu_metric = load_metric("bleu")
-                self.bertscore_metric = load_metric("bertscore")
-                self.metrics_available = True
-            except Exception as e:
-                logger.warning(f"Could not load evaluation metrics: {e}")
-                self.metrics_available = False
-        else:
-            self.metrics_available = False
-            logger.warning("Evaluation metrics not available. Install rouge-score and evaluate packages.")
+    # Advanced metrics are not available
+    self.metrics_available = False
+    logger.warning("Evaluation metrics not available. Install rouge-score and evaluate packages.")
     
     def evaluate_model(self, trainer, test_dataset: Dataset) -> Dict[str, Any]:
         """Evaluate model on test dataset."""
