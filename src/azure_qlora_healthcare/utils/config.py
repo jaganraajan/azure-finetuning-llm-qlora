@@ -16,7 +16,7 @@ class Config:
         self.config_path = config_path or self._get_default_config_path()
         self.config = {}
         self._load_env_variables()
-        self._load_config_file()
+        # self._load_config_file()
     
     def _get_default_config_path(self) -> str:
         """Get default configuration file path."""
@@ -29,7 +29,6 @@ class Config:
         env_path = Path(__file__).parent.parent.parent.parent / ".env"
         if env_path.exists():
             load_dotenv(env_path)
-        
         # Azure configuration
         self.config.update({
             "azure": {
@@ -44,40 +43,40 @@ class Config:
                 "min_nodes": int(os.getenv("COMPUTE_MIN_NODES", "0")),
                 "max_nodes": int(os.getenv("COMPUTE_MAX_NODES", "4")),
             },
-            "model": {
-                "base_model_name": os.getenv("BASE_MODEL_NAME", "microsoft/DialoGPT-medium"),
-                "max_length": int(os.getenv("MAX_LENGTH", "512")),
-                "batch_size": int(os.getenv("BATCH_SIZE", "8")),
-                "learning_rate": float(os.getenv("LEARNING_RATE", "2e-4")),
-                "num_epochs": int(os.getenv("NUM_EPOCHS", "3")),
-            },
-            "qlora": {
-                "lora_r": int(os.getenv("LORA_R", "16")),
-                "lora_alpha": int(os.getenv("LORA_ALPHA", "32")),
-                "lora_dropout": float(os.getenv("LORA_DROPOUT", "0.1")),
-                "target_modules": os.getenv("TARGET_MODULES", "q_proj,v_proj").split(","),
-            },
-            "data": {
-                "dataset_name": os.getenv("DATASET_NAME", "healthcare_qa"),
-                "train_split": float(os.getenv("TRAIN_SPLIT", "0.8")),
-                "val_split": float(os.getenv("VAL_SPLIT", "0.1")),
-                "test_split": float(os.getenv("TEST_SPLIT", "0.1")),
-            },
-            "bot": {
-                "app_id": os.getenv("BOT_APP_ID"),
-                "app_password": os.getenv("BOT_APP_PASSWORD"),
-                "endpoint": os.getenv("BOT_ENDPOINT"),
-            },
-            "monitoring": {
-                "wandb_project": os.getenv("WANDB_PROJECT", "azure-healthcare-qlora"),
-                "log_level": os.getenv("LOG_LEVEL", "INFO"),
-            },
-            "health_data": {
-                "fhir_service_url": os.getenv("FHIR_SERVICE_URL"),
-                "workspace": os.getenv("HEALTH_DATA_WORKSPACE"),
-            }
+            # "model": {
+            #     "base_model_name": os.getenv("BASE_MODEL_NAME", "microsoft/DialoGPT-medium"),
+            #     "max_length": int(os.getenv("MAX_LENGTH", "512")),
+            #     "batch_size": int(os.getenv("BATCH_SIZE", "8")),
+            #     "learning_rate": float(os.getenv("LEARNING_RATE", "2e-4")),
+            #     "num_epochs": int(os.getenv("NUM_EPOCHS", "3")),
+            # },
+            # "qlora": {
+            #     "lora_r": int(os.getenv("LORA_R", "16")),
+            #     "lora_alpha": int(os.getenv("LORA_ALPHA", "32")),
+            #     "lora_dropout": float(os.getenv("LORA_DROPOUT", "0.1")),
+            #     "target_modules": os.getenv("TARGET_MODULES", "q_proj,v_proj").split(","),
+            # },
+            # "data": {
+            #     "dataset_name": os.getenv("DATASET_NAME", "healthcare_qa"),
+            #     "train_split": float(os.getenv("TRAIN_SPLIT", "0.8")),
+            #     "val_split": float(os.getenv("VAL_SPLIT", "0.1")),
+            #     "test_split": float(os.getenv("TEST_SPLIT", "0.1")),
+            # },
+            # "bot": {
+            #     "app_id": os.getenv("BOT_APP_ID"),
+            #     "app_password": os.getenv("BOT_APP_PASSWORD"),
+            #     "endpoint": os.getenv("BOT_ENDPOINT"),
+            # },
+            # "monitoring": {
+            #     "wandb_project": os.getenv("WANDB_PROJECT", "azure-healthcare-qlora"),
+            #     "log_level": os.getenv("LOG_LEVEL", "INFO"),
+            # },
+            # "health_data": {
+            #     "fhir_service_url": os.getenv("FHIR_SERVICE_URL"),
+            #     "workspace": os.getenv("HEALTH_DATA_WORKSPACE"),
+            # }
         })
-    
+
     def _load_config_file(self):
         """Load configuration from YAML file."""
         if os.path.exists(self.config_path):

@@ -4,13 +4,15 @@ Azure setup script for initializing Azure ML workspace and resources.
 
 import sys
 from pathlib import Path
-
+# Load environment variables from .env file
+from dotenv import load_dotenv
+load_dotenv()
 # Add src to path
 sys.path.append(str(Path(__file__).parent.parent))
 
-from azure_qlora_healthcare.utils.azure_ml import AzureMLManager
-from azure_qlora_healthcare.utils.logger import get_logger
-from azure_qlora_healthcare.utils.config import get_config
+from src.azure_qlora_healthcare.utils.azure_ml import AzureMLManager
+from src.azure_qlora_healthcare.utils.logger import get_logger
+from src.azure_qlora_healthcare.utils.config import get_config
 
 def main():
     """Setup Azure ML workspace and resources."""
