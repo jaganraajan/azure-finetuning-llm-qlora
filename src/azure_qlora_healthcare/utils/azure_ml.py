@@ -4,7 +4,8 @@ Azure ML utilities for workspace management and compute cluster operations.
 
 from typing import Optional, Dict, Any
 from azure.ai.ml import MLClient
-from azure.ai.ml.entities import AmlCompute, Environment, CommandJob
+from azure.ai.ml.entities import AmlCompute, Environment
+from azure.ai.ml import command
 from azure.identity import DefaultAzureCredential
 from azure.core.exceptions import ResourceNotFoundError
 
@@ -105,8 +106,8 @@ class AzureMLManager:
         training_script: str,
         experiment_name: str = "healthcare-qlora-training",
         **kwargs
-    ) -> CommandJob:
-        """Submit training job to Azure ML."""
+    ):
+        """Submit training job to Azure ML using command() API."""
         
         logger.info(f"Submitting training job: {experiment_name}")
         
@@ -116,8 +117,8 @@ class AzureMLManager:
         # Create environment
         environment = self.create_environment()
         
-        # Create command job
-        job = CommandJob(
+        # Create command job using command() API
+        job = command(
             code="./src",
             command=f"python {training_script}",
             environment=environment,

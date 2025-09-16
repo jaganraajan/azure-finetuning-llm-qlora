@@ -10,11 +10,11 @@ from pathlib import Path
 # Add src to path
 sys.path.append(str(Path(__file__).parent.parent))
 
-from azure_qlora_healthcare.data.processor import HealthcareDataProcessor
-from azure_qlora_healthcare.training.qlora_trainer import QLoRATrainer
-from azure_qlora_healthcare.utils.azure_ml import AzureMLManager
-from azure_qlora_healthcare.utils.logger import get_logger, setup_azure_ml_logging, setup_wandb_logging
-from azure_qlora_healthcare.utils.config import get_config
+from src.azure_qlora_healthcare.data.processor import HealthcareDataProcessor
+from src.azure_qlora_healthcare.training.qlora_trainer import QLoRATrainer
+from src.azure_qlora_healthcare.utils.azure_ml import AzureMLManager
+from src.azure_qlora_healthcare.utils.logger import get_logger, setup_azure_ml_logging, setup_wandb_logging
+from src.azure_qlora_healthcare.utils.config import get_config
 
 def main():
     """Main training function."""

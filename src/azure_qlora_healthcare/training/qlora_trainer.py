@@ -12,7 +12,6 @@ from transformers import (
     TrainingArguments,
     Trainer,
     DataCollatorForLanguageModeling,
-    BitsAndBytesConfig,
 )
 from peft import (
     LoraConfig,
@@ -41,7 +40,7 @@ class QLoRATrainingConfig:
     lora_r: int = field(default=16)
     lora_alpha: int = field(default=32)
     lora_dropout: float = field(default=0.1)
-    target_modules: list = field(default_factory=lambda: ["q_proj", "v_proj"])
+    target_modules: list = field(default_factory=lambda: ["c_attn", "c_proj", "c_fc"])
     
     # Training configuration
     batch_size: int = field(default=8)
@@ -77,7 +76,7 @@ class QLoRATrainer:
             lora_r=app_config.get("qlora.lora_r", 16),
             lora_alpha=app_config.get("qlora.lora_alpha", 32),
             lora_dropout=app_config.get("qlora.lora_dropout", 0.1),
-            target_modules=app_config.get("qlora.target_modules", ["q_proj", "v_proj"]),
+            target_modules=app_config.get("qlora.target_modules", ["c_attn", "c_proj", "c_fc"]),
             batch_size=app_config.get("model.batch_size", 8),
             learning_rate=app_config.get("model.learning_rate", 2e-4),
             num_epochs=app_config.get("model.num_epochs", 3),
@@ -101,21 +100,15 @@ class QLoRATrainer:
             self.tokenizer.pad_token = self.tokenizer.eos_token
         
         # Configure quantization
-        bnb_config = BitsAndBytesConfig(
-            load_in_4bit=self.config.load_in_4bit,
-            bnb_4bit_use_double_quant=self.config.bnb_4bit_use_double_quant,
-            bnb_4bit_quant_type=self.config.bnb_4bit_quant_type,
-            bnb_4bit_compute_dtype=self.config.bnb_4bit_compute_dtype,
-        )
         
         # Load model
+        # Load model (CPU only, no quantization)
         self.model = AutoModelForCausalLM.from_pretrained(
             self.config.model_name,
-            quantization_config=bnb_config,
             device_map="auto",
             trust_remote_code=True,
+            offload_folder="./model_offload",
         )
-        
         # Prepare model for k-bit training
         self.model = prepare_model_for_kbit_training(self.model)
         
@@ -321,8 +314,8 @@ class QLoRATrainer:
             self.config.model_name,
             device_map="auto",
             torch_dtype=torch.bfloat16,
+            offload_folder="./model_offload",
         )
-        
         self.model = PeftModel.from_pretrained(base_model, model_path)
         
         logger.info("Model loaded successfully")
