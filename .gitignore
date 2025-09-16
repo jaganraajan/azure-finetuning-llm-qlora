@@ -75,23 +75,29 @@ checkpoints/
 *.bin
 *.safetensors
 
-# Data
+# Data (but allow examples)
 data/raw/
 data/processed/
 data/cache/
-*.csv
-*.json
+# Allow example data files
+!data/examples/*.csv
+!data/examples/*.json
+# Exclude other data files
+/data/*.csv
+/data/*.json
 *.parquet
 
 # Environment variables
 .env.local
 .env.production
-config.yaml
+# Allow main config, exclude secrets
+!config/config.yaml
 secrets.yaml
 
 # Jupyter
 .ipynb_checkpoints/
-*.ipynb
+# Allow example notebooks
+!notebooks/*.ipynb
 
 # macOS
 .DS_Store
