@@ -1,0 +1,93 @@
+# Azure QLoRA Healthcare Configuration
+
+# Azure ML Configuration
+azure:
+  subscription_id: ""  # Set via environment variable
+  resource_group: ""   # Set via environment variable
+  ml_workspace: ""     # Set via environment variable
+  location: "eastus2"
+
+# Compute Configuration
+compute:
+  cluster_name: "gpu-cluster"
+  vm_size: "Standard_NC6s_v3"
+  min_nodes: 0
+  max_nodes: 4
+  idle_seconds_before_scaledown: 1800
+
+# Model Configuration
+model:
+  base_model_name: "microsoft/DialoGPT-medium"
+  max_length: 512
+  batch_size: 8
+  learning_rate: 2e-4
+  num_epochs: 3
+  warmup_ratio: 0.1
+  weight_decay: 0.01
+  gradient_accumulation_steps: 1
+
+# QLoRA Configuration
+qlora:
+  lora_r: 16
+  lora_alpha: 32
+  lora_dropout: 0.1
+  target_modules: ["q_proj", "v_proj", "k_proj", "o_proj"]
+  bias: "none"
+  task_type: "CAUSAL_LM"
+
+# Data Configuration
+data:
+  dataset_name: "healthcare_qa"
+  train_split: 0.8
+  val_split: 0.1
+  test_split: 0.1
+  max_samples: null  # null for all samples
+  seed: 42
+
+# Training Configuration
+training:
+  save_strategy: "epoch"
+  evaluation_strategy: "epoch"
+  logging_steps: 100
+  save_total_limit: 3
+  load_best_model_at_end: true
+  metric_for_best_model: "eval_loss"
+  greater_is_better: false
+  dataloader_num_workers: 4
+  remove_unused_columns: false
+
+# Evaluation Configuration
+evaluation:
+  metrics: ["bleu", "rouge", "bertscore"]
+  batch_size: 16
+  max_new_tokens: 128
+  do_sample: true
+  temperature: 0.7
+  top_p: 0.9
+
+# Bot Service Configuration
+bot:
+  app_id: ""  # Set via environment variable
+  app_password: ""  # Set via environment variable
+  endpoint: ""  # Set via environment variable
+  max_response_length: 256
+  confidence_threshold: 0.7
+
+# Monitoring Configuration
+monitoring:
+  wandb_project: "azure-healthcare-qlora"
+  log_level: "INFO"
+  track_carbon_emissions: true
+  
+# Health Data Services Configuration
+health_data:
+  fhir_service_url: ""  # Set via environment variable
+  workspace: ""  # Set via environment variable
+  anonymization_enabled: true
+  compliance_checks: true
+
+# Security Configuration
+security:
+  enable_data_encryption: true
+  phi_detection_enabled: true
+  audit_logging: true
