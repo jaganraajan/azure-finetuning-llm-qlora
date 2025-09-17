@@ -11,8 +11,8 @@ from aiohttp import web
 # Add src to path
 sys.path.append(str(Path(__file__).parent.parent))
 
-from azure_qlora_healthcare.deployment.bot_service import create_bot_app
-from azure_qlora_healthcare.utils.logger import get_logger
+from src.azure_qlora_healthcare.deployment.bot_service import create_bot_app
+from src.azure_qlora_healthcare.utils.logger import get_logger
 
 def main():
     """Run the healthcare bot service."""

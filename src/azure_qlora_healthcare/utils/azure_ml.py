@@ -1,6 +1,7 @@
 """
 Azure ML utilities for workspace management and compute cluster operations.
 """
+import datetime
 
 from typing import Optional, Dict, Any
 from azure.ai.ml import MLClient
@@ -90,7 +91,7 @@ class AzureMLManager:
             name=env_name,
             description="Environment for healthcare QLoRA fine-tuning",
             conda_file="config/conda_env.yaml",
-            image="mcr.microsoft.com/azureml/openmpi4.1.0-cuda11.6-cudnn8-ubuntu20.04:latest",
+            image="mcr.microsoft.com/azureml/openmpi4.1.0-ubuntu20.04:latest",
         )
         
         try:
@@ -117,6 +118,9 @@ class AzureMLManager:
         # Create environment
         environment = self.create_environment()
         
+        # Generate a unique job name
+        unique_job_name = f"qlora-training-job-{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
+    
         # Create command job using command() API
         job = command(
             code="./src",
@@ -124,6 +128,7 @@ class AzureMLManager:
             environment=environment,
             compute=compute.name,
             experiment_name=experiment_name,
+            name=unique_job_name,
             description="Healthcare QLoRA fine-tuning job",
             tags={"project": "healthcare-qlora", "type": "training"},
             **kwargs

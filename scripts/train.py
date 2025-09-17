@@ -89,7 +89,7 @@ def main():
             # Submit training job
             job = azure_ml.submit_training_job(
                 training_script="scripts/train.py",
-                experiment_name="healthcare-qlora-training"
+                experiment_name="healthcare-qlora-training-2"
             )
             
             logger.info(f"Azure ML job submitted: {job.name}")

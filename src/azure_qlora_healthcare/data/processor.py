@@ -17,6 +17,35 @@ logger = get_logger(__name__)
 
 class HealthcareDataProcessor:
     """Processes healthcare Q&A data for fine-tuning."""
+    def load_local_medqa_dataset(self, base_dir: str) -> DatasetDict:
+        """Load MedQA dataset from local JSONL files."""
+        logger.info(f"Loading local MedQA dataset from {base_dir}")
+        splits = {"train": "train.jsonl", "validation": "dev.jsonl", "test": "test.jsonl"}
+        processed_dataset = {}
+        for split, filename in splits.items():
+            path = Path(base_dir) / filename
+            if not path.exists():
+                logger.warning(f"Missing {split} file: {path}")
+                continue
+            data = []
+            with open(path, "r") as f:
+                for line in f:
+                    example = json.loads(line)
+                    question = example.get("question", "")
+                    answer = example.get("answer", "")
+                    if not question or not answer:
+                        continue
+                    # Anonymize
+                    question = self.anonymize_text(question)
+                    answer = self.anonymize_text(answer)
+                    data.append({
+                        "input": question,
+                        "output": answer,
+                        "source": "medqa"
+                    })
+            processed_dataset[split] = Dataset.from_list(data)
+        logger.info(f"Loaded local MedQA dataset with splits: {list(processed_dataset.keys())}")
+        return DatasetDict(processed_dataset)
     
     def __init__(self):
         """Initialize data processor."""
@@ -56,30 +85,12 @@ class HealthcareDataProcessor:
         return anonymized_text
     
     def load_medqa_dataset(self) -> DatasetDict:
-        """Load MedQA dataset from Hugging Face."""
-        logger.info("Loading MedQA dataset...")
-        
+        """Load MedQA dataset from local files."""
+        local_path = self.config.get("data.medqa_local_path", "data/data_clean/questions/US")
         try:
-            # Load the MedQA dataset
-            dataset = load_dataset("bigbio/med_qa", "med_qa_en_bigbio_qa")
-            
-            # Process the dataset
-            processed_dataset = {}
-            for split in dataset.keys():
-                processed_data = []
-                for example in dataset[split]:
-                    processed_example = self._process_medqa_example(example)
-                    if processed_example:
-                        processed_data.append(processed_example)
-                
-                processed_dataset[split] = Dataset.from_list(processed_data)
-            
-            logger.info(f"Loaded MedQA dataset with {len(processed_dataset)} splits")
-            return DatasetDict(processed_dataset)
-            
+            return self.load_local_medqa_dataset(local_path)
         except Exception as e:
             logger.error(f"Failed to load MedQA dataset: {e}")
-            # Fall back to creating a sample dataset
             return self._create_sample_dataset()
     
     def _process_medqa_example(self, example: Dict[str, Any]) -> Optional[Dict[str, str]]:
