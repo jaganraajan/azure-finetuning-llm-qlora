@@ -29,8 +29,6 @@ dependencies:
     - botbuilder-schema>=4.15.0
     - botbuilder-integration-aiohttp>=4.15.0
     - aiohttp>=3.8.0
-    - azure-healthinsights-clinicalmatching>=1.0.0
-    - azure-healthcareapis-fhir>=1.0.0
     - pandas>=2.0.0
     - numpy>=1.24.0
     - scikit-learn>=1.3.0
