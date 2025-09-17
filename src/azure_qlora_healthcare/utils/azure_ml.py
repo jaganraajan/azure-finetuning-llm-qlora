@@ -74,7 +74,7 @@ class AzureMLManager:
     
     def create_environment(self) -> Environment:
         """Create custom environment for training."""
-        env_name = "healthcare-qlora-env"
+        env_name = "healthcare-qlora-env-3"
         
         try:
             # Check if environment already exists
